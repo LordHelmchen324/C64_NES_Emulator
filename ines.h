@@ -1,5 +1,5 @@
-#ifndef INES
-#define INES
+#ifndef INES_H
+#define INES_H
 
 #include<stdint.h>
 
