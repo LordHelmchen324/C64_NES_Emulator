@@ -1,6 +1,6 @@
 #ifndef DISASSEMBLER
 #define DISASSEMBLER
 
-int disassemble6510(unsigned char* codebuffer, int pc);
+int disassemble6502(unsigned char* codebuffer, int pc);
 
 #endif
