@@ -1,8 +1,8 @@
 #include <stdio.h>
 
-#include "emu6502.h"
+#include "emu6510.h"
 
-void emulate6502(State6502* state) {
+void emulate6510(State6510* state) {
     unsigned char* opcode = &state->memory[state->pc];
 
     switch (*opcode) {
@@ -163,10 +163,10 @@ void emulate6502(State6502* state) {
     state->pc += 1;
 }
 
-void instructionNotImplementedError(State6502* state) {
+void instructionNotImplementedError(State6510* state) {
     printf("ERROR: Instruction not implemented");
 }
 
-void unknownOpcodeError(State6502* state) {
+void unknownOpcodeError(State6510* state) {
     printf("ERROR: Unknown opcode");
 }

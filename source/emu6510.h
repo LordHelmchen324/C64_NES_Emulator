@@ -1,5 +1,5 @@
-#ifndef EMU6502_H
-#define EMU6502_H
+#ifndef EMU6510_H
+#define EMU6510_H
 
 #include <stdint.h>
 
@@ -11,7 +11,7 @@ typedef struct {
     uint8_t b:1;
     uint8_t v:1;
     uint8_t n:1;
-} StatusRegister6502;
+} StatusRegister6510;
 
 typedef struct {
     uint8_t a;
@@ -19,11 +19,11 @@ typedef struct {
     uint8_t y;
     uint8_t* memory;
     uint16_t pc;
-    StatusRegister6502 p;
-} State6502;
+    StatusRegister6510 p;
+} State6510;
 
-void emulate6502(State6502* state);
-void instructionNotImplementedError(State6502* state);
-void unknownOpcodeError(State6502* state);
+void emulate6510(State6510* state);
+void instructionNotImplementedError(State6510* state);
+void unknownOpcodeError(State6510* state);
 
 #endif
