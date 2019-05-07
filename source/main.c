@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "disassembler.h"
+#include "emu6502.h"
 #include "t64.h"
 
 int main(int argc, char* argv[]) {
@@ -12,11 +12,5 @@ int main(int argc, char* argv[]) {
 
     printT64TapeInfo(t);
 
-    uint8_t* prg = programFromT64Tape(t);
-    int pc = 0;
-    while (pc < 100) {
-        pc += disassemble6502(prg, pc);
-    }
-    
     return 0;
 }

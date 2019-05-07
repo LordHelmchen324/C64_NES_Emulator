@@ -8,7 +8,6 @@ typedef struct {
     uint16_t end;
     uint32_t offset;
     char name[16];
-    uint8_t* data;
 } T64Entry;
 
 typedef struct {
@@ -18,6 +17,7 @@ typedef struct {
     int maxEntries;
     int usedEntries;
     T64Entry* entries;
+    uint8_t* buffer;
 } T64Tape;
 
 T64Tape* loadT64Tape(char* path);

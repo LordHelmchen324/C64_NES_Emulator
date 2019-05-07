@@ -10,7 +10,7 @@ T64Tape* loadT64Tape(char* path) {
     uint8_t* buffer = fileToBuffer(path);
     if (buffer == NULL) return NULL;
 
-    T64Tape* t = malloc(sizeof(T64Tape));
+    T64Tape* t = (T64Tape*) malloc(sizeof(T64Tape));
 
     // Header
     memcpy(t->signature, buffer, 32);
@@ -20,7 +20,7 @@ T64Tape* loadT64Tape(char* path) {
     memcpy(t->name, &buffer[0x28], 24);
 
     // Files
-    t->entries = malloc(sizeof(T64Entry) * t->usedEntries);
+    t->entries = (T64Entry*) malloc(sizeof(T64Entry) * t->usedEntries);
     for (int i = 0; i < t->maxEntries; i++) {
         uint8_t* raw = &buffer[0x40 + 0x10 * i];
         t->entries[i].type = raw[0];
@@ -29,29 +29,20 @@ T64Tape* loadT64Tape(char* path) {
         t->entries[i].end = (raw[5]<<8) | raw[4];
         t->entries[i].offset = (raw[0x0b]<<24) | (raw[0x0a]<<16) | (raw[9]<<8) | raw[8];
         memcpy(t->entries[i].name, &raw[0x10], 16);
-        
-        int datasize = t->entries[i].end - t->entries[i].load;
-        t->entries[i].data = malloc(datasize);
-        memcpy(t->entries[i].data, &buffer[t->entries[i].offset], datasize);
     }
-
-    free(buffer);
+    t->buffer = buffer;
 
     return t;
 }
 
 uint8_t* programFromT64Tape(T64Tape* t) {
-    for (int i = 0; i < t->usedEntries; i++) {
-        T64Entry* e = &t->entries[i];
-        if (e->type == 1 && e->c64filetype == 0x82) {
-            int datasize = t->entries[i].end - t->entries[i].load;
-            uint8_t* prg = malloc(datasize);
-            memcpy(prg, t->entries[i].data, datasize);
+    T64Entry* e = &t->entries[0];
+
+    int datasize = e->end - e->load;
+    uint8_t* prg = (uint8_t*) malloc(datasize);
+    memcpy(prg, &t->buffer[e->offset], datasize);
             
-            return prg;
-        }
-    }
-    return NULL;
+    return prg;
 }
 
 void printT64TapeInfo(T64Tape* t) {
