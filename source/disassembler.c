@@ -2,10 +2,6 @@
 
 #include"disassembler.h"
 
-int disassemble6502(unsigned char* codebuffer, int pc);
-void unknownOpcodeError();
-void opcodeNotImplementedError();
-
 int disassemble6502(unsigned char* codebuffer, int pc) {
     unsigned char* code = &codebuffer[pc];
     int bytes = 1;
@@ -164,7 +160,7 @@ int disassemble6502(unsigned char* codebuffer, int pc) {
         case 0xf9: printf("SBC $%02x%02x,Y", code[2], code[1]); bytes = 3; break;
         case 0xfd: printf("SBC $%02x%02x,X", code[2], code[1]); bytes = 3; break;
         case 0xfe: printf("INC $%02x%02x,X", code[2], code[1]); bytes = 3; break;
-        default: unknownOpcodeError(code); break;
+        default: unknownOpcode(code); break;
     }
 
     printf("\n");
@@ -172,10 +168,6 @@ int disassemble6502(unsigned char* codebuffer, int pc) {
     return bytes;
 }
 
-void unknownOpcodeError(unsigned char* code) {
-    printf("ERROR: Unknown opcode $%02x", code[0]);
-}
-
-void opcodeNotImplementedError() {
-    printf("ERROR: Opcode not implemented");
+void unknownOpcode(unsigned char* code) {
+    printf("! Unknown opcode $%02x", code[0]);
 }
