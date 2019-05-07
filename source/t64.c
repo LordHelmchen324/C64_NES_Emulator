@@ -40,6 +40,20 @@ T64Tape* loadT64Tape(char* path) {
     return t;
 }
 
+uint8_t* programFromT64Tape(T64Tape* t) {
+    for (int i = 0; i < t->usedEntries; i++) {
+        T64Entry* e = &t->entries[i];
+        if (e->type == 1 && e->c64filetype == 0x82) {
+            int datasize = t->entries[i].end - t->entries[i].load;
+            uint8_t* prg = malloc(datasize);
+            memcpy(prg, t->entries[i].data, datasize);
+            
+            return prg;
+        }
+    }
+    return NULL;
+}
+
 void printT64TapeInfo(T64Tape* t) {
     printf("\n");
 

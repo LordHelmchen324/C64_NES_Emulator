@@ -21,6 +21,7 @@ typedef struct {
 } T64Tape;
 
 T64Tape* loadT64Tape(char* path);
+uint8_t* programFromT64Tape(T64Tape* t);
 void printT64TapeInfo(T64Tape* t);
 
 #endif
