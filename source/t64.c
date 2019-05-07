@@ -29,7 +29,10 @@ T64Tape* loadT64Tape(char* path) {
         t->entries[i].end = (raw[5]<<8) | raw[4];
         t->entries[i].offset = (raw[0x0b]<<24) | (raw[0x0a]<<16) | (raw[9]<<8) | raw[8];
         memcpy(t->entries[i].name, &raw[0x10], 16);
-        t->entries[i].data = NULL;
+        
+        int datasize = t->entries[i].end - t->entries[i].load;
+        t->entries[i].data = malloc(datasize);
+        memcpy(t->entries[i].data, &buffer[t->entries[i].offset], datasize);
     }
 
     free(buffer);
