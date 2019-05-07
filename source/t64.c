@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "emu6510.h"
 #include "file.h"
 
 #include "t64.h"
@@ -35,14 +36,21 @@ T64Tape* loadT64Tape(char* path) {
     return t;
 }
 
-uint8_t* programFromT64Tape(T64Tape* t) {
-    T64Entry* e = &t->entries[0];
+int loadT64TapeToMemory(char* path, State6510* state) {
+    T64Tape* t = loadT64Tape(path);
+    if (t == NULL) return 1;
 
+    T64Entry* e = &t->entries[0];
     int datasize = e->end - e->load;
-    uint8_t* prg = (uint8_t*) malloc(datasize);
-    memcpy(prg, &t->buffer[e->offset], datasize);
-            
-    return prg;
+    uint8_t* data = &t->buffer[e->offset];
+
+    memcpy(&state->memory[e->load], data, datasize);
+
+    free(t->entries);
+    free(t->buffer);
+    free(t);
+
+    return 0;
 }
 
 void printT64TapeInfo(T64Tape* t) {

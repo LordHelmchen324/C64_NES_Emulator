@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "emu6510.h"
 
@@ -164,9 +165,9 @@ void emulate6510(State6510* state) {
 }
 
 void instructionNotImplementedError(State6510* state) {
-    printf("ERROR: Instruction not implemented");
+    printf("ERROR: Instruction not implemented\n");
 }
 
 void unknownOpcodeError(State6510* state) {
-    printf("ERROR: Unknown opcode");
+    printf("ERROR: Unknown opcode\n");
 }

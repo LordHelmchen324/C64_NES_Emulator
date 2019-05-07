@@ -4,13 +4,15 @@
 #include "t64.h"
 
 int main(int argc, char* argv[]) {
-    T64Tape* t = loadT64Tape(argv[1]);
-    if (t == NULL) {
-        printf("ERROR: Could not load file %s\n", argv[1]);
-        exit(1);
+    State6510* state = (State6510*) malloc(sizeof(State6510));
+    state->memory = (uint8_t*) malloc(64000);
+
+    loadT64TapeToMemory(argv[1], state);
+
+    unsigned char isRunning = 1;
+    while (isRunning) {
+        emulate6510(state);
     }
-
-    printT64TapeInfo(t);
-
+    
     return 0;
 }

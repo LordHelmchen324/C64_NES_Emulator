@@ -22,6 +22,7 @@ typedef struct {
 
 T64Tape* loadT64Tape(char* path);
 uint8_t* programFromT64Tape(T64Tape* t);
+int loadT64TapeToMemory(char* path, State6510* state);
 void printT64TapeInfo(T64Tape* t);
 
 #endif
