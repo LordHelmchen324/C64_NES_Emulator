@@ -2,8 +2,8 @@
 #define T64_H
 
 typedef struct {
-    uint8_t filetypec64s;
-    uint8_t filetype1541;
+    uint8_t type;
+    uint8_t c64filetype;
     uint16_t load;
     uint16_t end;
     uint32_t offset;
@@ -21,5 +21,6 @@ typedef struct {
 } T64Tape;
 
 T64Tape* loadT64Tape(char* path);
+void printT64TapeInfo(T64Tape* t);
 
 #endif
