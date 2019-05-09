@@ -22,4 +22,7 @@ typedef struct {
     uint8_t* pcpr;
 } iNES;
 
+iNES* loadiNES(char* path);
+void printiNESInfo(iNES* ines);
+
 #endif
