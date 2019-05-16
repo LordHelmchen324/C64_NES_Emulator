@@ -404,7 +404,7 @@ void emulate6510(State6510* state) {
                 state->a = answer;
             }
             break;
-        case 0x4c: instructionNotImplementedError(state); break;    // JMP $NNNN
+        case 0x4c: instructionNotImplementedError(state); state->pc += 2; break;    // JMP $NNNN
         case 0x4d:      // EOR $NNNN
             {
                 uint16_t address = (opcode[2]<<8) | opcode[1]; state->pc += 2;
@@ -564,7 +564,7 @@ void emulate6510(State6510* state) {
                 state->a = answer;
             }
             break;
-        case 0x6c: instructionNotImplementedError(state); break;    // JMP $NN
+        case 0x6c: instructionNotImplementedError(state); state->pc++; break;    // JMP $NN
         case 0x6d:      // ADC $NNNN
             {
                 uint16_t address = (opcode[2]<<8) | opcode[1]; state->pc += 2;
@@ -1159,7 +1159,7 @@ void emulate6510(State6510* state) {
                 state->p.n = (state->x < operand);
             }
             break;
-        case 0xe1: instructionNotImplementedError(state); break;    // SBC ($NN,X)
+        case 0xe1: instructionNotImplementedError(state); state->pc++; break;    // SBC ($NN,X)
         case 0xe4:      // CPX $NN
             {
                 uint8_t address = opcode[1]; state->pc++;
@@ -1168,7 +1168,7 @@ void emulate6510(State6510* state) {
                 state->p.n = (state->x < state->memory[address]);
             }
             break;
-        case 0xe5: instructionNotImplementedError(state); break;    // SBC $NN
+        case 0xe5: instructionNotImplementedError(state); state->pc++; break;    // SBC $NN
         case 0xe6:      // INC $NN
             {
                 uint8_t address = opcode[1]; state->pc++;
@@ -1186,7 +1186,7 @@ void emulate6510(State6510* state) {
                 state->x = answer;
             }
             break;
-        case 0xe9: instructionNotImplementedError(state); break;    // SBC #$NN
+        case 0xe9: instructionNotImplementedError(state); state->pc++; break;    // SBC #$NN
         case 0xea:      // NOP
             break;
         case 0xec:      // CPX $NNNN
@@ -1197,7 +1197,7 @@ void emulate6510(State6510* state) {
                 state->p.n = (state->x < state->memory[address]);
             }
             break;
-        case 0xed: instructionNotImplementedError(state); break;    // SBC $NNNN
+        case 0xed: instructionNotImplementedError(state); state->pc += 2; break;    // SBC $NNNN
         case 0xee:      // INC $NNNN
             {
                 uint16_t address = (opcode[2]<<8) | opcode[1]; state->pc += 2;
@@ -1212,8 +1212,8 @@ void emulate6510(State6510* state) {
                 if (state->p.z == 1) state->pc += targetOffset;
             }
             break;
-        case 0xf1: instructionNotImplementedError(state); break;    // SBC ($NN),Y
-        case 0xf5: instructionNotImplementedError(state); break;    // SBC $NN,X
+        case 0xf1: instructionNotImplementedError(state); state->pc++; break;    // SBC ($NN),Y
+        case 0xf5: instructionNotImplementedError(state); state->pc++; break;    // SBC $NN,X
         case 0xf6:      // INC $NN,X
             {
                 uint8_t address = opcode[1]; state->pc++;
@@ -1228,8 +1228,8 @@ void emulate6510(State6510* state) {
                 state->p.d = 1;
             }
             break;
-        case 0xf9: instructionNotImplementedError(state); break;    // SBC $NNNN,Y
-        case 0xfd: instructionNotImplementedError(state); break;    // SBC $NNNN,X
+        case 0xf9: instructionNotImplementedError(state); state->pc += 2; break;    // SBC $NNNN,Y
+        case 0xfd: instructionNotImplementedError(state); state->pc += 2; break;    // SBC $NNNN,X
         case 0xfe:      // INC $NNNN,X
             {
                 uint16_t address = (opcode[2]<<8) | opcode[1]; state->pc += 2;
