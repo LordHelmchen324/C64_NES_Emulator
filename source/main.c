@@ -10,12 +10,10 @@ int main(int argc, char* argv[]) {
 
     loadT64TapeToMemory(argv[1], state);
 
-    printState6510(state);
-
     unsigned char isRunning = 1;
-    /*while (isRunning) {
+    while (isRunning) {
         emulate6510(state);
-    }*/
+    }
     
     return 0;
 }

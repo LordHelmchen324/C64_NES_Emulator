@@ -1,9 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "disassembler.h"
 
 #include "emu6510.h"
 
+#define DEBUG
+
 void emulate6510(State6510* state) {
+    #ifdef DEBUG
+    disassemble6502(state->memory, state->pc);
+    #endif
+
     unsigned char* opcode = &state->memory[state->pc]; state->pc++;
 
     switch (*opcode) {
@@ -1245,10 +1252,12 @@ void emulate6510(State6510* state) {
 
 void instructionNotImplementedError(State6510* state) {
     printf("ERROR: Instruction not implemented\n");
+    exit(1);
 }
 
 void unknownOpcodeError(State6510* state) {
     printf("ERROR: Unknown opcode\n");
+    exit(1);
 }
 
 void printState6510(State6510* state) {
