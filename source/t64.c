@@ -45,6 +45,7 @@ int loadT64TapeToMemory(char* path, State6510* state) {
     uint8_t* data = &t->buffer[e->offset];
 
     memcpy(&state->memory[e->load], data, datasize);
+    state->pc = e->load;
 
     free(t->entries);
     free(t->buffer);
