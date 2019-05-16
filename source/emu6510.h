@@ -26,5 +26,6 @@ typedef struct {
 void emulate6510(State6510* state);
 void instructionNotImplementedError(State6510* state);
 void unknownOpcodeError(State6510* state);
+void printState6510(State6510* state);
 
 #endif

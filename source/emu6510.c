@@ -1250,3 +1250,17 @@ void instructionNotImplementedError(State6510* state) {
 void unknownOpcodeError(State6510* state) {
     printf("ERROR: Unknown opcode\n");
 }
+
+void printState6510(State6510* state) {
+    printf("\n");
+
+    printf("############### State6510 ###############\n");
+    printf("a:    $%02x\n", state->a);
+    printf("x:    $%02x\n", state->x);
+    printf("y:    $%02x\n", state->y);
+    printf("pc:   $%04x\n", state->pc);
+    printf("s:    $%04x\n", state->s);
+    printf("#########################################\n");
+
+    printf("\n");
+}
