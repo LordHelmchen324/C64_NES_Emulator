@@ -14,7 +14,26 @@ void emulate6510(State6510* state) {
     unsigned char* opcode = &state->memory[state->pc]; state->pc++;
 
     switch (*opcode) {
-        case 0x00: instructionNotImplementedError(state); break;    // BRK
+        case 0x00:      // BRK
+            {
+                uint16_t returnAddress = state->pc + 2;
+                state->p.i = 1;
+                state->p.b = 1;
+                state->memory[state->s] = returnAddress & 0xff;
+                state->memory[state->s+1] = returnAddress >> 8;
+                state->s -= 2;
+                uint8_t stateByte = 0b00000000;
+                stateByte |= state->p.c << 6;
+                stateByte |= state->p.z << 5;
+                stateByte |= state->p.i << 4;
+                stateByte |= state->p.d << 3;
+                stateByte |= state->p.b << 2;
+                stateByte |= state->p.v << 1;
+                stateByte |= state->p.n;
+                state->memory[state->s] = stateByte; state->s--;
+                state->pc = (state->memory[0xffff]<<8) | state->memory[0xfffe];
+            }
+            break;
         case 0x01:      // ORA ($NN,X)
             {
                 uint8_t address = opcode[1]; state->pc++;
@@ -1258,6 +1277,19 @@ void instructionNotImplementedError(State6510* state) {
 void unknownOpcodeError(State6510* state) {
     printf("ERROR: Unknown opcode\n");
     exit(1);
+}
+
+State6510* makeState6510Default() {
+    State6510* state = (State6510*) malloc(sizeof(State6510));
+
+    state->memory = (uint8_t*) malloc(64000);
+    state->memory[0xfffa] = 0x43; state->memory[0xfffb] = 0xfe;     // NMI
+    state->memory[0xfffc] = 0xe2; state->memory[0xfffd] = 0xfc;     // Reset
+    state->memory[0xfffe] = 0x48; state->memory[0xffff] = 0xff;     // IRQ/BRK
+    
+    state->s = 0x01ff;
+
+    return state;
 }
 
 void printState6510(State6510* state) {
