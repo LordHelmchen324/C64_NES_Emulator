@@ -432,7 +432,11 @@ void emulate6510(State6510* state) {
                 state->a = answer;
             }
             break;
-        case 0x4c: instructionNotImplementedError(state); state->pc += 2; break;    // JMP $NNNN
+        case 0x4c:      // JMP $NNNN
+            {
+                state->pc = (opcode[2]<<8) | opcode[1]; state->pc += 2;
+            }
+            break;
         case 0x4d:      // EOR $NNNN
             {
                 uint16_t address = (opcode[2]<<8) | opcode[1]; state->pc += 2;
@@ -592,7 +596,11 @@ void emulate6510(State6510* state) {
                 state->a = answer;
             }
             break;
-        case 0x6c: instructionNotImplementedError(state); state->pc++; break;    // JMP $NN
+        case 0x6c:      // JMP $NN
+            {
+                state->pc = opcode[1]; state->pc++;
+            }
+            break;
         case 0x6d:      // ADC $NNNN
             {
                 uint16_t address = (opcode[2]<<8) | opcode[1]; state->pc += 2;
