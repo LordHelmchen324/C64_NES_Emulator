@@ -19,11 +19,15 @@ typedef struct {
     uint8_t y;
     uint8_t* memory;
     uint16_t pc;
-    uint16_t s;
+    uint8_t s;
     StatusRegister6510 p;
 } State6510;
 
 void emulate6510(State6510* state);
+void byteToStack(State6510* state, uint8_t byte);
+void wordToStack(State6510* state, uint16_t word);
+uint8_t byteFromStack(State6510* state);
+uint16_t wordFromStack(State6510* state);
 void instructionNotImplementedError(State6510* state);
 void unknownOpcodeError(State6510* state);
 State6510* makeState6510Default();

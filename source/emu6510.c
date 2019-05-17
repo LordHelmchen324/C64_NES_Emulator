@@ -8,8 +8,11 @@
 
 #define DEBUG
 
+#define STACK_START 0x0100
+
 void emulate6510(State6510* state) {
     #ifdef DEBUG
+    printf("A:$%04x X:$%04x Y:$%04x PC:$%04x S:$%02x | ", state->a, state->x, state->y, state->pc, state->s);
     disassemble6502(state->memory, state->pc);
     #endif
 
@@ -21,9 +24,7 @@ void emulate6510(State6510* state) {
                 uint16_t returnAddress = state->pc + 2;
                 state->p.i = 1;
                 state->p.b = 1;
-                state->memory[state->s] = returnAddress & 0xff;
-                state->memory[state->s+1] = returnAddress >> 8;
-                state->s -= 2;
+                wordToStack(state, returnAddress);
                 uint8_t stateByte = 0b00000000;
                 stateByte |= state->p.c << 6;
                 stateByte |= state->p.z << 5;
@@ -32,7 +33,7 @@ void emulate6510(State6510* state) {
                 stateByte |= state->p.b << 2;
                 stateByte |= state->p.v << 1;
                 stateByte |= state->p.n;
-                state->memory[state->s] = stateByte; state->s--;
+                byteToStack(state, stateByte);
                 state->pc = (state->memory[0xffff]<<8) | state->memory[0xfffe];
             }
             break;
@@ -75,7 +76,7 @@ void emulate6510(State6510* state) {
                 stateByte |= state->p.b << 2;
                 stateByte |= state->p.v << 1;
                 stateByte |= state->p.n;
-                state->memory[state->s] = stateByte; state->s--;
+                byteToStack(state, stateByte);
             }
             break;
         case 0x09:      // ORA #$NN
@@ -193,9 +194,7 @@ void emulate6510(State6510* state) {
             {
                 uint16_t jumpAddress = (opcode[2]<<8) | opcode[1]; state->pc += 2;
                 uint16_t returnAddress = state->pc - 1;
-                state->memory[state->s] = returnAddress & 0xff;
-                state->memory[state->s+1] = returnAddress >> 8;
-                state->s -= 2;
+                wordToStack(state, returnAddress);
                 state->pc = jumpAddress;
             }
             break;
@@ -238,7 +237,7 @@ void emulate6510(State6510* state) {
             break;
         case 0x28:      // PLP
             {
-                state->s--; uint8_t stateByte = state->memory[state->s];
+                uint8_t stateByte = byteFromStack(state);
                 state->p.c = (stateByte & 0b01000000) >> 6;
                 state->p.z = (stateByte & 0b00100000) >> 5;
                 state->p.i = (stateByte & 0b00010000) >> 4;
@@ -369,7 +368,7 @@ void emulate6510(State6510* state) {
             break;
         case 0x40:      // RTI
             {
-                state->s++; uint8_t stateByte = state->memory[state->s];
+                uint8_t stateByte = byteFromStack(state);
                 state->p.c = (stateByte & 0b01000000) >> 6;
                 state->p.z = (stateByte & 0b00100000) >> 5;
                 state->p.i = (stateByte & 0b00010000) >> 4;
@@ -377,7 +376,7 @@ void emulate6510(State6510* state) {
                 state->p.b = (stateByte & 0b00000100) >> 2;
                 state->p.v = (stateByte & 0b00000010) >> 1;
                 state->p.n = stateByte & 0b00000001;
-                state->s += 2; state->pc = (state->memory[state->s+1]<<8) | state->memory[state->s];
+                state->pc = wordFromStack(state);
             }
             break;
         case 0x41:      // EOR ($NN,X)
@@ -411,7 +410,7 @@ void emulate6510(State6510* state) {
             break;
         case 0x48:      // PHA
             {
-                state->memory[state->s] = state->a; state->s--;
+                byteToStack(state, state->a);
             }
             break;
         case 0x49:      // EOR #$NN
@@ -532,7 +531,7 @@ void emulate6510(State6510* state) {
             break;
         case 0x60:      // RTS
             {
-                state->s -= 2; state->pc = ((state->memory[state->s+1]<<8) | state->memory[state->s]) - 1;
+                state->pc = wordFromStack(state);
             }
             break;
         case 0x61:      // ADC ($NN,X)
@@ -570,7 +569,7 @@ void emulate6510(State6510* state) {
             break;
         case 0x68:      // PLA
             {
-                state->s--; uint8_t answer = state->memory[state->s];
+                uint8_t answer = byteFromStack(state);
                 state->p.z = (answer == 0);
                 state->p.n = (answer & 0b10000000) >> 7;
                 state->a = answer;
@@ -1279,6 +1278,26 @@ void emulate6510(State6510* state) {
     }
 }
 
+void byteToStack(State6510* state, uint8_t byte) {
+    state->memory[STACK_START+state->s] = byte;
+    state->s--;
+}
+
+void wordToStack(State6510* state, uint16_t word) {
+    byteToStack(state, word & 0xff);
+    byteToStack(state, word >> 8);
+}
+
+uint8_t byteFromStack(State6510* state) {
+    state->s++;
+    return state->memory[STACK_START+state->s];
+}
+
+uint16_t wordFromStack(State6510* state) {
+    uint16_t word = byteFromStack(state) << 8;
+    return word | byteFromStack(state);
+}
+
 void instructionNotImplementedError(State6510* state) {
     printf("ERROR: Instruction not implemented\n");
     exit(1);
@@ -1293,7 +1312,7 @@ State6510* makeState6510Default() {
     State6510* state = (State6510*) malloc(sizeof(State6510));
 
     state->memory = (uint8_t*) malloc(64000);
-    state->s = 0x01ff;
+    state->s = 0xff;
 
     // Load the kernel
     uint8_t* kernelBuffer = fileToBuffer("resource/c64kernelv3");
