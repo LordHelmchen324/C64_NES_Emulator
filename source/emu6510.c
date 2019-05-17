@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "disassembler.h"
+#include "file.h"
 
 #include "emu6510.h"
 
@@ -1283,11 +1285,16 @@ State6510* makeState6510Default() {
     State6510* state = (State6510*) malloc(sizeof(State6510));
 
     state->memory = (uint8_t*) malloc(64000);
-    state->memory[0xfffa] = 0x43; state->memory[0xfffb] = 0xfe;     // NMI
-    state->memory[0xfffc] = 0xe2; state->memory[0xfffd] = 0xfc;     // Reset
-    state->memory[0xfffe] = 0x48; state->memory[0xffff] = 0xff;     // IRQ/BRK
-    
     state->s = 0x01ff;
+
+    // Load the kernel
+    uint8_t* kernelBuffer = fileToBuffer("resource/c64kernelv3");
+    if (kernelBuffer == NULL) {
+        printf("ERROR: Failed to load the kernel\n");
+        exit(1);
+    }
+    memcpy(&state->memory[0xe000], kernelBuffer, 8192);
+    free(kernelBuffer);
 
     return state;
 }
