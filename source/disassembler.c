@@ -32,7 +32,7 @@ int disassemble6502(unsigned char* codebuffer, int pc) {
         case 0x25: printf("AND $%02x", code[1]); bytes = 2; break;
         case 0x26: printf("ROL $%02x", code[1]); bytes = 2; break;
         case 0x28: printf("PLP"); break;
-        case 0x29: printf("#$%02x", code[1]); bytes = 2; break;
+        case 0x29: printf("AND #$%02x", code[1]); bytes = 2; break;
         case 0x2a: printf("ROL A"); break;
         case 0x2c: printf("BIT $%02x%02x", code[2], code[1]); bytes = 3; break;
         case 0x2d: printf("AND $%02x%02x", code[2], code[1]); bytes = 3; break;
